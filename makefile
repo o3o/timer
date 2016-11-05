@@ -41,7 +41,8 @@ SRC_TEST += $(shell find $(TEST_SOURCE_DIR) -name "*.d")
 getSources = $(shell find $(ROOT_SOURCE_DIR) -name "*.d")
 getVer = $(shell ag -o --nofilename '\d+\.\d+\.\d+' $(ROOT_SOURCE_DIR)/$(NAME)/semver.d)
 #http://stackoverflow.com/questions/1546711/can-grep-show-only-words-that-match-search-pattern#1546735
-getNameSdl = $(shell ag -o  'name\s+\"\K[[:alpha:]]+' dub.sdl)
+getNameSdl = $(shell ag -m1 --silent -o 'name\s+\"\K\w+' dub.sdl)
+#getNameSdl = $(shell ag -m1 -o 'name\s+\"\K[[:alpha:]]+' dub.sdl)
 getNameJson = $(shell ag -o -m1 '\"name\":\s+\"\K[[:alpha:]]+' dub.json)
 
 #############
@@ -58,6 +59,8 @@ UPX = upx --no-progress
 #############
 # per impostatare la configurazione conf
 # make c=conf
+# per debug
+# make b=debug
 CONFIG += $(if $(c), -c$(c))
 BUILD += $(if $(b), -b$(b))
 DUBFLAGS = -q $(CONFIG) $(BUILD)
@@ -99,7 +102,6 @@ btest:
 	$(DUB) build -cunittest -q
 
 mx: all upx
-
 upx: $(BIN)/$(NAME)
 	$(UPX) $^
 
@@ -160,23 +162,23 @@ var:
 	@echo
 	@echo "General"
 	@echo "--------------------"
-	@echo NAME:       $(NAME)
-	@echo BIN_NAME : $(BIN_NAME)
-	@echo PRJ_VER:    $(PROJECT_VERSION)
-	@echo DUBFLAGS:   $(DUBFLAGS)
-	@echo DUB FILE:   $(SDL_FILE)
+	@echo "NAME     :" $(NAME)
+	@echo "BIN_NAME :" $(BIN_NAME)
+	@echo "PRJ_VER  :" $(PROJECT_VERSION)
+	@echo "DUBFLAGS :" $(DUBFLAGS)
+	@echo "DUB FILE :" $(SDL_FILE)
 	@echo
 	@echo "Directory"
 	@echo "--------------------"
-	@echo D_DIR: $(D_DIR)
-	@echo BIN:   $(BIN)
-	@echo ROOT_SOURCE_DIR: $(ROOT_SOURCE_DIR)
-	@echo TEST_SOURCE_DIR: $(TEST_SOURCE_DIR)
+	@echo "D_DIR           :" $(D_DIR)
+	@echo "BIN             :" $(BIN)
+	@echo "ROOT_SOURCE_DIR :" $(ROOT_SOURCE_DIR)
+	@echo "TEST_SOURCE_DIR :" $(TEST_SOURCE_DIR)
 	@echo
 	@echo "Zip"
 	@echo "--------------------"
-	@echo ZIP: $(ZIP)
-	@echo ZIP_PREFIX: $(ZIP_PREFIX)
+	@echo "ZIP        :" $(ZIP)
+	@echo "ZIP_PREFIX :" $(ZIP_PREFIX)
 	@echo 
 	@echo "Zip source"
 	@echo "--------------------"
@@ -200,6 +202,7 @@ help:
 	@echo "   testd   : Build and executes the tests in debug mode"
 	@echo "   btest   : Build the tests"
 	@echo "   upx     : Compress using upx"
+	@echo "   mx      : Make and compress using upx"
 	@echo ""
 	@echo "Pack"
 	@echo "--------------------"
