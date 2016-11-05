@@ -4,7 +4,6 @@ import std.stdio;
 
 import timer;
 
-
 void main(string[] args) {
    writeln();
    writeln("Countdown example");
