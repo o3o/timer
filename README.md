@@ -20,9 +20,6 @@ void main(string[] args) {
    StopWatchTimer sw;
    sw.start();
    Thread.sleep(dur!("msecs")(200));
-   writefln("elapsed %d ms", sw.elapsedMsecs);
-
-   Thread.sleep(dur!("msecs")(150));
    sw.stop();
    writefln("elapsed %s", sw.elapsed);
 
@@ -38,7 +35,6 @@ void main(string[] args) {
 ```
 
 ### CountdownTimer
-
 ```
 import core.thread;
 import std.stdio;
@@ -55,7 +51,12 @@ void main(string[] args) {
 }
 ```
 
-see also [examples](./examples/) directory.
+Examples can be found in the  [examples](./examples/) directory, and ran with `dub run timer:stopwatch` or `dub run timer:countdown` or finally with make:
+
+```
+$ cd examples
+$ make
+```
 
 ## Libraries
 * [unit-threaded](https://github.com/atilaneves/unit-threaded.git)
