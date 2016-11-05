@@ -20,3 +20,19 @@ configuration "unittest" {
 
    dependency "unit-threaded" version="~>0.7.0"
 }
+
+subPackage {
+	name "countdown"
+	description "Simple countdown timer example"
+	dependency "timer" path="."
+	targetType "executable"
+	sourceFiles "examples/countdown.d"
+   }
+
+subPackage {
+	name "stopwatch"
+	description "Simple stopwatch timer example"
+	dependency "timer" path="."
+	targetType "executable"
+	sourceFiles "examples/stopwatch.d"
+}
