@@ -9,7 +9,7 @@ A simple D implementation of countdown and stopwatch timer
 
 ## Usage
 
-### StopWatch
+### StopWatchTimer
 ```
 import core.thread;
 import std.stdio;
@@ -55,7 +55,7 @@ void main(string[] args) {
 }
 ```
 
-see also [examples]()xamples/) directory.
+see also [examples](./examples/) directory.
 
 ## Libraries
 * [unit-threaded](https://github.com/atilaneves/unit-threaded.git)
