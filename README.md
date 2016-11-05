@@ -4,7 +4,14 @@
 
 
 # timer
-A simple D implementation of countdown timer
+A simple D implementation of countdown and stopwatch timer
+
+
+## Usage
+```
+
+```
+
 
 ## Libraries
 * [unit-threaded](https://github.com/atilaneves/unit-threaded.git)
