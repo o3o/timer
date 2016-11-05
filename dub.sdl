@@ -27,7 +27,7 @@ subPackage {
 	dependency "timer" path="."
 	targetType "executable"
 	sourceFiles "examples/countdown.d"
-   }
+}
 
 subPackage {
 	name "stopwatch"
