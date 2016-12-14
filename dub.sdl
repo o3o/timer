@@ -26,6 +26,7 @@ subPackage {
 	description "Simple countdown timer example"
 	dependency "timer" path="."
 	targetType "executable"
+   targetPath "bin"
 	sourceFiles "examples/countdown.d"
 }
 
@@ -34,5 +35,6 @@ subPackage {
 	description "Simple stopwatch timer example"
 	dependency "timer" path="."
 	targetType "executable"
+   targetPath "bin"
 	sourceFiles "examples/stopwatch.d"
 }

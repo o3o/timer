@@ -23,13 +23,13 @@ NAME = $(getNameJson)
 SDL_FILE = dub.json
 endif
 
-BIN_NAME = $(BIN)/libtimer.a
+BIN_NAME = $(BIN)/lib$(NAME).a
 
 #############
 # Packages  #
 #############
-ZIP = $(BIN_NAME)
-ZIP_SRC = $(ZIP) $(SRC) $(SDL_FILE) README.md CHANGELOG.md makefile $(SRC_TEST)
+ZIP_BIN = $(BIN_NAME)
+ZIP_SRC = $(ZIP_BIN) $(SRC) $(SDL_FILE) README.md CHANGELOG.md makefile $(SRC_TEST)
 ZIP_PREFIX = $(NAME)-$(PROJECT_VERSION)
 
 #############
@@ -63,7 +63,9 @@ UPX = upx --no-progress
 # make b=debug
 CONFIG += $(if $(c), -c$(c))
 BUILD += $(if $(b), -b$(b))
-DUBFLAGS = -q $(CONFIG) $(BUILD)
+# make run s=timer:countdown
+SUB += $(if $(s), $(NAME):$(s))
+DUBFLAGS = -q $(CONFIG) $(BUILD) $(SUB)
 
 # si usa cosi:
 # make test W=tests.common.testRunOnce
@@ -91,10 +93,8 @@ run-rel:
 
 test:
 	$(DUB) test -q $(WHERE)
-
 testd:
 	$(DUB) test -q $(WHERE) -d
-
 testl:
 	$(DUB) test -q -- -l
 
@@ -112,12 +112,12 @@ pkgall: pkg pkgtar pkgsrc
 
 pkg: pkgdir | pkg/$(ZIP_PREFIX).zip
 
-pkg/$(ZIP_PREFIX).zip: $(ZIP)
-	zip $@ $(ZIP)
+pkg/$(ZIP_PREFIX).zip: $(ZIP_BIN)
+	zip $@ $(ZIP_BIN)
 
 pkgtar: pkgdir | pkg/$(ZIP_PREFIX).tar.bz2
 
-pkg/$(ZIP_PREFIX).tar.bz2: $(ZIP)
+pkg/$(ZIP_PREFIX).tar.bz2: $(ZIP_BIN)
 	tar -jcf $@ $^
 
 pkgsrc: pkgdir | pkg/$(ZIP_PREFIX)-src.tar.bz2
@@ -177,8 +177,8 @@ var:
 	@echo
 	@echo "Zip"
 	@echo "--------------------"
-	@echo "ZIP        :" $(ZIP)
-	@echo "ZIP_PREFIX :" $(ZIP_PREFIX)
+	@echo "ZIP_BIN    : " $(ZIP_BIN)
+	@echo "ZIP_PREFIX : " $(ZIP_PREFIX)
 	@echo 
 	@echo "Zip source"
 	@echo "--------------------"
