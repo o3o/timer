@@ -71,9 +71,10 @@ DUBFLAGS = -q $(CONFIG) $(BUILD) $(SUB)
 # make test W=tests.common.testRunOnce
 # oppure con piu' parametri
 # make test W='tests.common.testRunOnce -d'
-WHERE += $(if $(W), -- $(W))
+WHERE += $(if $(W), $(W))
+SEP = $(if $(W), -- )
 
-.PHONY: all release force run run-rel test btest upx pkgall pkg pkgtar pkgsrc tags style syn loc clean clobber pb pc pp ver var help
+.PHONY: all release force run run-rel test btest upx dx rx pkgall pkg pkgtar pkgsrc up tags style syn loc clean clobber pb pc pp ver var help
 
 DEFAULT: all
 
@@ -92,16 +93,19 @@ run-rel:
 	$(DUB) run -brelease $(DUBFLAGS)
 
 test:
-	$(DUB) test -q $(WHERE)
+	$(DUB) test -q $(SEP) $(WHERE)
 testd:
-	$(DUB) test -q $(WHERE) -d
+	$(DUB) test -q -- -d $(WHERE)
+testc:
+	$(DUB) test -q -- -c $(WHERE)
 testl:
 	$(DUB) test -q -- -l
 
 btest:
 	$(DUB) build -cunittest -q
 
-mx: all upx
+dx: all upx
+rx: release upx
 upx: $(BIN)/$(NAME)
 	$(UPX) $^
 
@@ -124,6 +128,9 @@ pkgsrc: pkgdir | pkg/$(ZIP_PREFIX)-src.tar.bz2
 
 pkg/$(ZIP_PREFIX)-src.tar.bz2: $(ZIP_SRC)
 	tar -jcf $@ $^
+
+up:
+	$(DUB) upgrade
 
 tags: $(SRC)
 	$(DSCAN) --ctags $^ > tags
@@ -200,9 +207,11 @@ help:
 	@echo "   run     : Builds and runs"
 	@echo "   test    : Build and executes the tests"
 	@echo "   testd   : Build and executes the tests in debug mode"
+	@echo "   testc   : Build and executes the tests with execution time"
 	@echo "   btest   : Build the tests"
 	@echo "   upx     : Compress using upx"
-	@echo "   mx      : Make and compress using upx"
+	@echo "   dx      : Make debug and compress using upx"
+	@echo "   rx      : Make release and compress using upx"
 	@echo ""
 	@echo "Pack"
 	@echo "--------------------"
@@ -213,6 +222,7 @@ help:
 	@echo ""
 	@echo "Utility"
 	@echo "--------------------"
+	@echo "   up      : Forces an upgrade of all dub dependencies"
 	@echo "   tags    : Generates tag file"
 	@echo "   style   : Checks programming style"
 	@echo "   syn     : Syntax check"
