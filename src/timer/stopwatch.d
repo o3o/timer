@@ -70,4 +70,8 @@ struct StopWatchTimer {
    long elapsedMsecs() {
       return elapsed.total!("msecs");
    }
+
+   long elapsedSeconds() {
+      return elapsed.total!("seconds");
+   }
 }
