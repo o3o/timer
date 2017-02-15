@@ -29,20 +29,15 @@ BIN_NAME = $(BIN)/lib$(NAME).a
 # Packages  #
 #############
 ZIP_BIN = $(BIN_NAME)
-ZIP_SRC = $(ZIP_BIN) $(SRC) $(SDL_FILE) README.md CHANGELOG.md makefile $(SRC_TEST)
+ZIP_SRC = $(ZIP_BIN) $(SRC) $(SDL_FILE) README.md CHANGELOG.md makefile
+ZIP_SRC += tests/*.d
 ZIP_PREFIX = $(NAME)-$(PROJECT_VERSION)
 
-#############
-# Test      #
-#############
-TEST_SOURCE_DIR = tests
-SRC_TEST += $(shell find $(TEST_SOURCE_DIR) -name "*.d")
 
 getSources = $(shell find $(ROOT_SOURCE_DIR) -name "*.d")
-getVer = $(shell ag -o --nofilename '\d+\.\d+\.\d+' $(ROOT_SOURCE_DIR)/$(NAME)/semver.d)
 #http://stackoverflow.com/questions/1546711/can-grep-show-only-words-that-match-search-pattern#1546735
+getVer = $(shell ag -o --nofilename '\d+\.\d+\.\d+(-\w+\.\d)?' $(ROOT_SOURCE_DIR)/$(NAME)/semver.d)
 getNameSdl = $(shell ag -m1 --silent -o 'name\s+\"\K\w+' dub.sdl)
-#getNameSdl = $(shell ag -m1 -o 'name\s+\"\K[[:alpha:]]+' dub.sdl)
 getNameJson = $(shell ag -o -m1 '\"name\":\s+\"\K[[:alpha:]]+' dub.json)
 
 #############
@@ -72,7 +67,7 @@ DUBFLAGS = -q $(CONFIG) $(BUILD) $(SUB)
 # oppure con piu' parametri
 # make test W='tests.common.testRunOnce -d'
 WHERE += $(if $(W), $(W))
-SEP = $(if $(W), -- )
+SEP = $(if $(WHERE), -- )
 
 .PHONY: all release force run run-rel test btest upx dx rx pkgall pkg pkgtar pkgsrc up tags style syn loc clean clobber pb pc pp ver var help
 
@@ -81,8 +76,14 @@ DEFAULT: all
 all:
 	$(DUB) build $(DUBFLAGS)
 
+build-ldc:
+	$(DUB) build $(DUBFLAGS) --compiler=ldc
+
 release:
 	$(DUB) build -brelease $(DUBFLAGS)
+
+rel-ldc:
+	$(DUB) build -brelease --compiler=ldc $(DUBFLAGS)
 
 force:
 	$(DUB) build --force --combined $(DUBFLAGS)
@@ -162,6 +163,10 @@ pc:
 pp:
 	$(DUB) build  --print-platform
 
+changelog: CHANGELOG.txt
+CHANGELOG.txt: CHANGELOG.md
+	pandoc -f markdown_github -t plain $^ > $@
+
 ver:
 	@echo $(PROJECT_VERSION)
 
@@ -203,6 +208,7 @@ help:
 	@echo "--------------------"
 	@echo "   all     : (the default if no target is provided)"
 	@echo "   release : Compiles in release mode"
+	@echo "   rel-ldc : Compiles in release mode with ldc compiler"
 	@echo "   force   : Forces a recompilation"
 	@echo "   run     : Builds and runs"
 	@echo "   test    : Build and executes the tests"
