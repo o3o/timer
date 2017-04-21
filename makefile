@@ -1,4 +1,4 @@
-# makefile release 0.4.0
+# makefile release 0.6.0
 PROJECT_VERSION = $(getVer)
 
 #############
@@ -15,14 +15,7 @@ SRC = $(getSources)
 #############
 # Names     #
 #############
-SDL_FILE = dub.sdl
-ifneq ("$(wildcard $(SDL_FILE))","")
 NAME = $(getNameSdl)
-else
-NAME = $(getNameJson)
-SDL_FILE = dub.json
-endif
-
 BIN_NAME = $(BIN)/lib$(NAME).a
 
 #############
@@ -33,12 +26,13 @@ ZIP_SRC = $(ZIP_BIN) $(SRC) $(SDL_FILE) README.md CHANGELOG.md makefile
 ZIP_SRC += tests/*.d
 ZIP_PREFIX = $(NAME)-$(PROJECT_VERSION)
 
-
+#############
+# Funcs     #
+#############
 getSources = $(shell find $(ROOT_SOURCE_DIR) -name "*.d")
 #http://stackoverflow.com/questions/1546711/can-grep-show-only-words-that-match-search-pattern#1546735
 getVer = $(shell ag -o --nofilename '\d+\.\d+\.\d+(-\w+\.\d)?' $(ROOT_SOURCE_DIR)/$(NAME)/semver.d)
 getNameSdl = $(shell ag -m1 --silent -o 'name\s+\"\K\w+' dub.sdl)
-getNameJson = $(shell ag -o -m1 '\"name\":\s+\"\K[[:alpha:]]+' dub.json)
 
 #############
 # Commands  #
@@ -54,13 +48,16 @@ UPX = upx --no-progress
 #############
 # per impostatare la configurazione conf
 # make c=conf
-# per debug
-# make b=debug
 CONFIG += $(if $(c), -c$(c))
-BUILD += $(if $(b), -b$(b))
+## Per impostare modalita release
+## make rel=y
+BUILD = $(if $(rel), -brelease)
+# per compilare con ldc
+## make ldc=y
+COMPILER = $(if $(ldc), --compiler=ldc)
 # make run s=timer:countdown
 SUB += $(if $(s), $(NAME):$(s))
-DUBFLAGS = -q $(CONFIG) $(BUILD) $(SUB)
+DUBFLAGS = -q $(CONFIG) $(BUILD) $(COMPILER) $(SUB)
 
 # si usa cosi:
 # make test W=tests.common.testRunOnce
@@ -69,29 +66,18 @@ DUBFLAGS = -q $(CONFIG) $(BUILD) $(SUB)
 WHERE += $(if $(W), $(W))
 SEP = $(if $(WHERE), -- )
 
-.PHONY: all release force run run-rel test btest upx dx rx pkgall pkg pkgtar pkgsrc up tags style syn loc clean clobber pb pc pp ver var help
+.PHONY: build force run test testd testc testl btest upx pkgall pkg pkgtar pkgsrc up tags style syn loc clean clobber pb pc pp changelog ver var help
 
-DEFAULT: all
+DEFAULT: build
 
-all:
+build:
 	$(DUB) build $(DUBFLAGS)
-
-build-ldc:
-	$(DUB) build $(DUBFLAGS) --compiler=ldc
-
-release:
-	$(DUB) build -brelease $(DUBFLAGS)
-
-rel-ldc:
-	$(DUB) build -brelease --compiler=ldc $(DUBFLAGS)
 
 force:
 	$(DUB) build --force --combined $(DUBFLAGS)
 
 run:
 	$(DUB) run $(DUBFLAGS)
-run-rel:
-	$(DUB) run -brelease $(DUBFLAGS)
 
 test:
 	$(DUB) test -q $(SEP) $(WHERE)
@@ -101,14 +87,11 @@ testc:
 	$(DUB) test -q -- -c $(WHERE)
 testl:
 	$(DUB) test -q -- -l
-
 btest:
 	$(DUB) build -cunittest -q
 
-dx: all upx
-rx: release upx
-upx: $(BIN)/$(NAME)
-	$(UPX) $^
+upx: build
+	$(UPX) $(BIN)/$(NAME)
 
 pkgdir:
 	$(MKDIR) pkg
@@ -185,7 +168,6 @@ var:
 	@echo "D_DIR           :" $(D_DIR)
 	@echo "BIN             :" $(BIN)
 	@echo "ROOT_SOURCE_DIR :" $(ROOT_SOURCE_DIR)
-	@echo "TEST_SOURCE_DIR :" $(TEST_SOURCE_DIR)
 	@echo
 	@echo "Zip"
 	@echo "--------------------"
@@ -206,18 +188,15 @@ help:
 	@echo "The following are some of the valid targets for this Makefile:"
 	@echo "Compile"
 	@echo "--------------------"
-	@echo "   all     : (the default if no target is provided)"
-	@echo "   release : Compiles in release mode"
-	@echo "   rel-ldc : Compiles in release mode with ldc compiler"
+	@echo "   build   : Compiles in debug mode"
 	@echo "   force   : Forces a recompilation"
 	@echo "   run     : Builds and runs"
 	@echo "   test    : Build and executes the tests"
-	@echo "   testd   : Build and executes the tests in debug mode"
-	@echo "   testc   : Build and executes the tests with execution time"
+	@echo "   testd   : Enable debug output"
+	@echo "   testc   : Print execution time per test"
+	@echo "   testl   : List tests"
 	@echo "   btest   : Build the tests"
 	@echo "   upx     : Compress using upx"
-	@echo "   dx      : Make debug and compress using upx"
-	@echo "   rx      : Make release and compress using upx"
 	@echo ""
 	@echo "Pack"
 	@echo "--------------------"
@@ -243,3 +222,10 @@ help:
 	@echo "   pp  : Prints the identifiers for the current build platform as used for the build fields"
 	@echo "   ver : Prints version"
 	@echo "   var : Lists all variables"
+	@echo ""
+	@echo "Common options"
+	@echo "--------------------"
+	@echo "   make c=conf  : Uses 'conf' configuration"
+	@echo "   make rel=y  : Uses 'release' build"
+	@echo "   make ldc=y  : Uses 'ldc' compiler"
+	@echo "   make s=x    : Uses 's' subpakages"
