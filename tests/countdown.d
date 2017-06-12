@@ -8,8 +8,9 @@ import timer.countdown;
 void testIsOver() {
    import core.thread;
 
-   // e' in ms
+   // in ms
    auto count = Countdown();
+   count.isOver.shouldBeTrue;
 
    count.start(50);
    count.isOver.shouldBeFalse;

@@ -24,7 +24,6 @@ void testRunning() {
 }
 
 void testElaps() {
-
    StopWatchTimer sw;
    sw.start();
    auto t0 = sw.elapsed();
@@ -72,6 +71,16 @@ void testMs() {
    sw.reset();
    sw.elapsed.total!"msecs".shouldEqual(0);
    sw.elapsedMsecs.shouldEqual(0);
+}
+void testSecs() {
+   StopWatchTimer sw;
+   sw.start();
+   Thread.sleep(dur!("msecs")(100));
+   sw.stop();
+   sw.elapsed.total!"seconds".shouldEqual(sw.elapsedSeconds);
+   sw.reset();
+   sw.elapsed.total!"seconds".shouldEqual(0);
+   sw.elapsedSeconds.shouldEqual(0);
 }
 
 void testIdle() {

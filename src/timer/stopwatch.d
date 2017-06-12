@@ -37,6 +37,7 @@ struct StopWatchTimer {
       _timeStart = MonoTime.zero;
       _timeMeasured = Duration.zero;
    }
+
    /**
     * Reset and start the stop watch.
     */
@@ -63,7 +64,14 @@ struct StopWatchTimer {
       }
    }
 
+   /**
+    * Gets the total elapsed time in milliseconds
+    */
    long elapsedMsecs() {
       return elapsed.total!("msecs");
+   }
+
+   long elapsedSeconds() {
+      return elapsed.total!("seconds");
    }
 }
