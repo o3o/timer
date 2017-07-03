@@ -1,11 +1,14 @@
+/**
+ *  Module containing timer functionality.
+ */
 module timer.stopwatch;
+
 import std.datetime;
 
 /**
- *
  * StopWatch measures time.
  *
- * This class uses a MonoTime
+ * This class uses a MonoTime.
  */
 struct StopWatchTimer {
    // true if observing.
@@ -63,7 +66,7 @@ struct StopWatchTimer {
    }
 
    /**
-    * Gets the total elapsed time
+    * Gets the total elapsed time.
     */
    Duration elapsed() const @nogc  {
       if (_flagStarted) {
@@ -74,14 +77,14 @@ struct StopWatchTimer {
    }
 
    /**
-    * Gets the total elapsed time in milliseconds
+    * Gets the total elapsed time in milliseconds.
     */
    long elapsedMsecs() {
       return elapsed.total!("msecs");
    }
 
    /**
-    * Gets the total elapsed time in seconds
+    * Gets the total elapsed time in seconds.
     */
    long elapsedSeconds() {
       return elapsed.total!("seconds");

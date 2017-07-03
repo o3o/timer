@@ -1,3 +1,6 @@
+/**
+ * Module containing countdown timer functionality.
+ */
 module timer.countdown;
 import std.datetime;
 

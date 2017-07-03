@@ -6,7 +6,6 @@ import unit_threaded;
 import timer.stopwatch;
 
 void testRunning() {
-
    auto sw = StopWatchTimer();
    sw.running.shouldBeFalse;
 
@@ -47,6 +46,22 @@ void testDoubleStop() {
    (t1 - sw.elapsed).total!"msecs".shouldEqual(0);
 }
 
+void testDoubleStart() {
+   auto sw = StopWatchTimer();
+   sw.running.shouldBeFalse;
+
+   sw.start();
+   sw.running.shouldBeTrue;
+
+   Thread.sleep(dur!("msecs")(100));
+   Duration t1 = sw.elapsed();
+
+   sw.start();
+   sw.running.shouldBeTrue;
+   Thread.sleep(dur!("msecs")(100));
+   assert(sw.elapsed > t1);
+}
+
 void testElapsIncrease() {
    auto sw = StopWatchTimer();
    sw.start();
@@ -67,16 +82,19 @@ void testMs() {
    sw.start();
    Thread.sleep(dur!("msecs")(100));
    sw.stop();
+
    sw.elapsed.total!"msecs".shouldEqual(sw.elapsedMsecs);
    sw.reset();
    sw.elapsed.total!"msecs".shouldEqual(0);
    sw.elapsedMsecs.shouldEqual(0);
 }
+
 void testSecs() {
    StopWatchTimer sw;
    sw.start();
    Thread.sleep(dur!("msecs")(100));
    sw.stop();
+
    sw.elapsed.total!"seconds".shouldEqual(sw.elapsedSeconds);
    sw.reset();
    sw.elapsed.total!"seconds".shouldEqual(0);
@@ -112,10 +130,10 @@ void testRestart() {
    StopWatchTimer sw;
    sw.running.shouldBeFalse;
    sw.start();
-
    sw.running.shouldBeTrue;
    Thread.sleep(dur!("msecs")(200));
    sw.stop();
+
    sw.elapsedMsecs.shouldBeGreaterThan(199);
    sw.running.shouldBeFalse;
 
