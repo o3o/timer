@@ -30,8 +30,8 @@ ZIP_PREFIX = $(NAME)-$(PROJECT_VERSION)
 # Funcs     #
 #############
 getSources = $(shell find $(ROOT_SOURCE_DIR) -name "*.d")
-#http://stackoverflow.com/questions/1546711/can-grep-show-only-words-that-match-search-pattern#1546735
 getVer = $(shell ag -o --nofilename '\d+\.\d+\.\d+(-\w+\.\d)?' $(ROOT_SOURCE_DIR)/$(NAME)/semver.d)
+#http://stackoverflow.com/questions/1546711/can-grep-show-only-words-that-match-search-pattern#1546735
 getNameSdl = $(shell ag -m1 --silent -o 'name\s+\"\K\w+' dub.sdl)
 
 #############
@@ -51,10 +51,11 @@ UPX = upx --no-progress
 CONFIG += $(if $(c), -c$(c))
 ## Per impostare modalita release
 ## make rel=y
-BUILD = $(if $(rel), -brelease)
+BUILD = $(if $(or $(rel), $(rl) ), -brelease)
+
 # per compilare con ldc
 ## make ldc=y
-COMPILER = $(if $(ldc), --compiler=ldc)
+COMPILER = $(if $(or $(ldc), $(rl)), --compiler=ldc)
 # make run s=timer:countdown
 SUB += $(if $(s), $(NAME):$(s))
 DUBFLAGS = -q $(CONFIG) $(BUILD) $(COMPILER) $(SUB)
@@ -76,7 +77,7 @@ build:
 force:
 	$(DUB) build --force --combined $(DUBFLAGS)
 
-run:
+run: build
 	$(DUB) run $(DUBFLAGS)
 
 test:
@@ -154,20 +155,19 @@ ver:
 	@echo $(PROJECT_VERSION)
 
 var:
-	@echo
 	@echo "General"
 	@echo "--------------------"
 	@echo "NAME     :" $(NAME)
 	@echo "BIN_NAME :" $(BIN_NAME)
 	@echo "PRJ_VER  :" $(PROJECT_VERSION)
 	@echo "DUBFLAGS :" $(DUBFLAGS)
-	@echo "DUB FILE :" $(SDL_FILE)
 	@echo
 	@echo "Directory"
 	@echo "--------------------"
 	@echo "D_DIR           :" $(D_DIR)
 	@echo "BIN             :" $(BIN)
 	@echo "ROOT_SOURCE_DIR :" $(ROOT_SOURCE_DIR)
+varsrc:
 	@echo
 	@echo "Zip"
 	@echo "--------------------"
@@ -191,12 +191,12 @@ help:
 	@echo "   build   : Compiles in debug mode"
 	@echo "   force   : Forces a recompilation"
 	@echo "   run     : Builds and runs"
-	@echo "   test    : Build and executes the tests"
+	@echo "   test    : Builds and executes the tests"
 	@echo "   testd   : Enable debug output"
 	@echo "   testc   : Print execution time per test"
-	@echo "   testl   : List tests"
-	@echo "   btest   : Build the tests"
-	@echo "   upx     : Compress using upx"
+	@echo "   testl   : Lists tests"
+	@echo "   btest   : Builds tests"
+	@echo "   upx     : Makes compressed exe"
 	@echo ""
 	@echo "Pack"
 	@echo "--------------------"
@@ -228,4 +228,5 @@ help:
 	@echo "   make c=conf  : Uses 'conf' configuration"
 	@echo "   make rel=y  : Uses 'release' build"
 	@echo "   make ldc=y  : Uses 'ldc' compiler"
+	@echo "   make rl=y   : Uses 'ldc' compiler and 'release' build"
 	@echo "   make s=x    : Uses 's' subpakages"
