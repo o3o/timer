@@ -112,10 +112,13 @@ void testIdle() {
    sw.running.shouldBeFalse;
 }
 
-void testReset() {
+@UnitTest
+void resetInIdleStatus() {
    StopWatchTimer sw;
    sw.running.shouldBeFalse;
+
    sw.start();
+   sw.running.shouldBeTrue;
    Thread.sleep(dur!("msecs")(100));
 
    sw.stop();
@@ -123,6 +126,22 @@ void testReset() {
    sw.elapsedMsecs.shouldBeGreaterThan(99);
 
    sw.reset();
+   sw.elapsedMsecs.shouldEqual(0);
+}
+
+@UnitTest
+void resetInRunningStatus() {
+   StopWatchTimer sw;
+
+   sw.running.shouldBeFalse;
+   sw.start();
+   sw.running.shouldBeTrue;
+
+   Thread.sleep(dur!("msecs")(100));
+   sw.elapsedMsecs.shouldBeGreaterThan(99);
+
+   sw.reset();
+   sw.running.shouldBeFalse;
    sw.elapsedMsecs.shouldEqual(0);
 }
 

@@ -3,7 +3,12 @@
  */
 module timer.stopwatch;
 
+version(unittest) {
+   import unit_threaded;
+}
+
 import std.datetime;
+import core.time;
 
 /**
  * StopWatch measures time.
@@ -89,4 +94,38 @@ struct StopWatchTimer {
    long elapsedSeconds() {
       return elapsed.total!("seconds");
    }
+
+   /**
+    * Gets the total elapsed time in seconds.
+    */
+   string elapsedHMS() {
+      return elapsed.toHMS();
+   }
+}
+
+private string toHMS(Duration d) {
+   import std.string : format;
+
+   int hours;
+   int minutes;
+   int seconds;
+
+   d.split!("hours", "minutes", "seconds")(hours, minutes, seconds);
+   return "%02d:%02d:%02d".format(hours, minutes, seconds);
+}
+
+@("tohms")
+unittest {
+   Duration d = dur!"days"(1) + dur!"hours"(3) + dur!"minutes"(12);
+   toHMS(d).shouldEqual("27:12:00");
+   d = dur!"days"(0) + dur!"hours"(2) + dur!"minutes"(62);
+   toHMS(d).shouldEqual("03:02:00");
+
+   d = dur!"hours"(3) + dur!"minutes"(0) + dur!"seconds"(42);
+   toHMS(d).shouldEqual("03:00:42");
+   d = dur!"hours"(3) + dur!"minutes"(2) + dur!"seconds"(1);
+   toHMS(d).shouldEqual("03:02:01");
+
+   d = dur!"hours"(3) + dur!"minutes"(2) + dur!"seconds"(124);
+   toHMS(d).shouldEqual("03:04:04");
 }
