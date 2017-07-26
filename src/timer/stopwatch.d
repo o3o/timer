@@ -103,7 +103,7 @@ struct StopWatchTimer {
    }
 }
 
-private string toHMS(Duration d) {
+string toHMS(Duration d) {
    import std.string : format;
 
    int hours;
@@ -128,4 +128,13 @@ unittest {
 
    d = dur!"hours"(3) + dur!"minutes"(2) + dur!"seconds"(124);
    toHMS(d).shouldEqual("03:04:04");
+}
+
+@("rem")
+unittest {
+   Duration dEnd = dur!"hours"(4);
+   Duration dCurr = dur!"hours"(2) + dur!"minutes"(42);
+   Duration d = dEnd - dCurr;
+
+   toHMS(d).shouldEqual("01:18:00");
 }
