@@ -8,8 +8,7 @@ import std.datetime;
  * This class uses a MonoTime
  */
 struct StopWatchTimer {
-   // true if observing.
-   private bool _flagStarted = false;
+   private bool _flagStarted;
 
    // TickDuration at the time of StopWatch starting measurement.
    private MonoTime _timeStart;
