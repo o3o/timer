@@ -1,11 +1,19 @@
+/**
+ *  Module containing timer functionality.
+ */
 module timer.stopwatch;
+
+version(unittest) {
+   import unit_threaded;
+}
+
 import std.datetime;
+import core.time;
 
 /**
- *
  * StopWatch measures time.
  *
- * This class uses a MonoTime
+ * This class uses a MonoTime.
  */
 struct StopWatchTimer {
    private bool _flagStarted;
@@ -62,7 +70,7 @@ struct StopWatchTimer {
    }
 
    /**
-    * Gets the total elapsed time
+    * Gets the total elapsed time.
     */
    Duration elapsed() const @nogc  {
       if (_flagStarted) {
@@ -73,16 +81,59 @@ struct StopWatchTimer {
    }
 
    /**
-    * Gets the total elapsed time in milliseconds
+    * Gets the total elapsed time in milliseconds.
     */
    long elapsedMsecs() {
       return elapsed.total!("msecs");
    }
 
    /**
-    * Gets the total elapsed time in seconds
+    * Gets the total elapsed time in seconds.
     */
    long elapsedSeconds() {
       return elapsed.total!("seconds");
    }
+
+   /**
+    * Gets the total elapsed time in seconds.
+    */
+   string elapsedHMS() {
+      return elapsed.toHMS();
+   }
+}
+
+string toHMS(Duration d) {
+   import std.string : format;
+
+   int hours;
+   int minutes;
+   int seconds;
+
+   d.split!("hours", "minutes", "seconds")(hours, minutes, seconds);
+   return "%02d:%02d:%02d".format(hours, minutes, seconds);
+}
+
+@("tohms")
+unittest {
+   Duration d = dur!"days"(1) + dur!"hours"(3) + dur!"minutes"(12);
+   toHMS(d).shouldEqual("27:12:00");
+   d = dur!"days"(0) + dur!"hours"(2) + dur!"minutes"(62);
+   toHMS(d).shouldEqual("03:02:00");
+
+   d = dur!"hours"(3) + dur!"minutes"(0) + dur!"seconds"(42);
+   toHMS(d).shouldEqual("03:00:42");
+   d = dur!"hours"(3) + dur!"minutes"(2) + dur!"seconds"(1);
+   toHMS(d).shouldEqual("03:02:01");
+
+   d = dur!"hours"(3) + dur!"minutes"(2) + dur!"seconds"(124);
+   toHMS(d).shouldEqual("03:04:04");
+}
+
+@("rem")
+unittest {
+   Duration dEnd = dur!"hours"(4);
+   Duration dCurr = dur!"hours"(2) + dur!"minutes"(42);
+   Duration d = dEnd - dCurr;
+
+   toHMS(d).shouldEqual("01:18:00");
 }
