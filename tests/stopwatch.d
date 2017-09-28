@@ -30,8 +30,10 @@ void testElaps() {
 
    auto t1 = sw.elapsed();
    auto t2 = sw.elapsed();
+
    assert(t0 <= t1);
    assert(t1 == t2);
+   assert(t1 > dur!"seconds"(0));
 }
 
 void testDoubleStop() {
@@ -58,8 +60,8 @@ void testDoubleStart() {
 
    sw.start();
    sw.running.shouldBeTrue;
-   Thread.sleep(dur!("msecs")(100));
-   assert(sw.elapsed > t1);
+   Thread.sleep(dur!("msecs")(200));
+   sw.elapsed.shouldBeGreaterThan(t1);
 }
 
 void testElapsIncrease() {
