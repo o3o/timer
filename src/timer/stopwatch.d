@@ -103,6 +103,15 @@ struct StopWatchTimer {
    }
 }
 
+unittest {
+   StopWatchTimer timer;
+   timer._timeStart.ticks.shouldEqual(0);
+   timer.start();
+   timer._timeStart -= dur!"seconds"(64500);
+   timer.elapsedSeconds.shouldEqual(64500);
+   timer.elapsedMsecs.shouldEqual(64500000);
+}
+
 string toHMS(Duration d) {
    import std.string : format;
 
