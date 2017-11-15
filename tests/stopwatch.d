@@ -33,6 +33,7 @@ void testElaps() {
 
    assert(t0 <= t1);
    t1.shouldEqual(t2);
+   assert(t1 > dur!"seconds"(0));
 }
 
 void testDoubleStop() {
