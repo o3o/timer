@@ -64,6 +64,20 @@ void testDoubleStart() {
    sw.elapsed.shouldBeGreaterThan(t1);
 }
 
+void testDoubleStartResetTimer() {
+   auto sw = StopWatchTimer();
+   sw.running.shouldBeFalse;
+
+   sw.start();
+   sw.running.shouldBeTrue;
+
+   Thread.sleep(dur!("msecs")(100));
+   Duration t1 = sw.elapsed();
+
+   sw.start(); // should reset initial time
+   t1.shouldBeGreaterThan(sw.elapsed);
+}
+
 void testElapsIncrease() {
    auto sw = StopWatchTimer();
    sw.start();

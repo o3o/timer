@@ -65,14 +65,14 @@ struct StopWatchTimer {
    /**
     * Confirms whether this stopwatch is measuring time.
     */
-   bool running() @property const pure nothrow @nogc  {
+   bool running() @property const pure nothrow @nogc {
       return _flagStarted;
    }
 
    /**
     * Gets the total elapsed time.
     */
-   Duration elapsed() const @nogc  {
+   Duration elapsed() const @nogc {
       if (_flagStarted) {
          return (MonoTime.currTime - _timeStart) + _timeMeasured;
       } else {
@@ -146,3 +146,33 @@ unittest {
 
    toHMS(d).shouldEqual("01:18:00");
 }
+
+import std.datetime.stopwatch: StopWatch, AutoStart;
+long elapsedSeconds() {
+   return watch.peek().total!("seconds");
+}
+
+long elapsedMsecs(StopWatch watch) {
+   return watch.peek().total!("msecs");
+}
+unittest {
+   import core.thread : Thread;
+
+   auto sw = StopWatch(AutoStart.no);
+   sw.start();
+
+   Thread.sleep(msecs(1));
+   assert(sw.elapsedMsecs >= 1);
+
+   Thread.sleep(msecs(1));
+   assert(sw.elapsedMsecs >= 2);
+
+   sw.stop();
+   immutable stopped = sw.elapsedMsecs;
+   Thread.sleep(usecs(1));
+
+   sw.start();
+   Thread.sleep(usecs(1));
+   assert(sw.elapsedMsecs >= stopped);
+}
+
