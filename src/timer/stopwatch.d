@@ -148,7 +148,7 @@ unittest {
 }
 
 import std.datetime.stopwatch: StopWatch, AutoStart;
-long elapsedSeconds() {
+long elapsedSeconds(StopWatch watch) {
    return watch.peek().total!("seconds");
 }
 
