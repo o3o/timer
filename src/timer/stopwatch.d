@@ -175,4 +175,3 @@ unittest {
    Thread.sleep(usecs(1));
    assert(sw.elapsedMsecs >= stopped);
 }
-
