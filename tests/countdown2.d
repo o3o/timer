@@ -20,22 +20,18 @@ void testIsOver() {
 }
 
 void testElapsed() {
-
-   // e' in ms
+   // in ms
    auto count = Countdown2();
 
    count.start(100);
    Thread.sleep(dur!("msecs")(10));
-
-   import std.stdio;
-   writeln(count.elapsedTime);
 
    count.elapsedTime.shouldBeGreaterThan(9);
    count.remainingTime.shouldBeSmallerThan(92);
 }
 
 void testElapsedS() {
-   // e' in sec
+   // seconds
    auto count = Countdown2Sec();
    count.remainingTime.shouldEqual(0);
 
@@ -48,7 +44,6 @@ void testElapsedS() {
 }
 
 void testElapsedM() {
-   // e' in sec
    auto count = Countdown2MicroSec();
    count.remainingTime.shouldEqual(0);
 
@@ -58,4 +53,20 @@ void testElapsedM() {
 
    count.elapsedTime.shouldBeGreaterThan(10_000);
    count.remainingTime.shouldBeSmallerThan(90_000);
+}
+
+@UnitTest
+void startReset() {
+   auto count = Countdown2MicroSec();
+
+   count.start(100_000);
+   count.running.shouldBeTrue;
+
+   Thread.sleep(dur!("msecs")(10));
+   count.elapsedTime.shouldBeGreaterThan(10_000);
+
+   count.start(100_000);
+   Thread.sleep(dur!("msecs")(10));
+   count.running.shouldBeTrue;
+   count.elapsedTime.shouldBeSmallerThan(11_000);
 }

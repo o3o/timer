@@ -84,4 +84,8 @@ struct CountdownTimer2(TimeUnit unit) {
    @property bool isOver() {
       return remainingTime <= 0;
    }
+   @property @safe bool running() {
+      return _sw.running;
+   }
+
 }
