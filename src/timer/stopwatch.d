@@ -151,10 +151,35 @@ import std.datetime.stopwatch: StopWatch, AutoStart;
 long elapsedSeconds(StopWatch watch) {
    return watch.peek().total!("seconds");
 }
+@("sec")
+unittest {
+   import core.thread : Thread;
+
+   auto sw = StopWatch(AutoStart.no);
+   sw.start();
+
+   Thread.sleep(seconds(1));
+   import std.stdio;
+   writeln(sw.elapsedSeconds);
+   assert(sw.elapsedSeconds >= 1);
+   assert(sw.elapsedSeconds < 3);
+
+   Thread.sleep(seconds(1));
+   assert(sw.elapsedSeconds >= 2);
+
+   sw.stop();
+   immutable stopped = sw.elapsedMsecs;
+   Thread.sleep(usecs(1));
+
+   sw.start();
+   Thread.sleep(seconds(1));
+   assert(sw.elapsedMsecs >= stopped);
+}
 
 long elapsedMsecs(StopWatch watch) {
    return watch.peek().total!("msecs");
 }
+
 unittest {
    import core.thread : Thread;
 

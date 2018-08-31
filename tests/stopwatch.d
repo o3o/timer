@@ -25,15 +25,16 @@ void testRunning() {
 void testElaps() {
    StopWatchTimer sw;
    sw.start();
-   auto t0 = sw.elapsed();
+   Thread.sleep(dur!("msecs")(100));
+   Duration t0 = sw.elapsed();
    sw.stop();
 
-   auto t1 = sw.elapsed();
-   auto t2 = sw.elapsed();
+   Duration t1 = sw.elapsed();
+   Duration t2 = sw.elapsed();
 
    assert(t0 <= t1);
    t1.shouldEqual(t2);
-   assert(t1 > dur!"seconds"(0));
+   assert(t1 > dur!"msecs"(0));
 }
 
 void testDoubleStop() {
